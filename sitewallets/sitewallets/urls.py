@@ -16,7 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from wallets.views import WalletAPIView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/v1/wallets', WalletAPIView.as_view())
 ]
