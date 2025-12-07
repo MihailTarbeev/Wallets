@@ -6,18 +6,16 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 
-# class WalletAPIView(generics.ListAPIView):
-#     queryset = Wallet.objects.all()
-#     serializer_class = WalletSerializer
-
-
 class WalletAPIView(APIView):
     def get(self, request):
-        lst = Wallet.objects.all().values()
-        return Response({'Кошельки': list(lst)})
+        wallets_objs = Wallet.objects.all()
+        return Response({'wallets': WalletSerializer(wallets_objs, many=True).data})
 
     def post(self, request):
+        serializer = WalletSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         new_wallet = Wallet.objects.create(
             balance=request.data['balance']
         )
-        return Response({'Кошелёк': model_to_dict(new_wallet)})
+        return Response({'wallet': WalletSerializer(new_wallet).data})
