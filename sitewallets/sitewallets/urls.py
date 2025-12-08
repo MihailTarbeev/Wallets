@@ -16,11 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from wallets.views import WalletAPIView
+from wallets.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/wallets', WalletAPIView.as_view()),
-    path('api/v1/wallets/<uuid:uuid>', WalletAPIView.as_view())
+    path('api/v1/wallets/', WalletAPIList.as_view()),
+    path('api/v1/wallets/<uuid:uuid>', WalletAPIList.as_view())
 
 ]
