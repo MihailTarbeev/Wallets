@@ -15,13 +15,19 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 from wallets.views import *
+from rest_framework import routers
+
+
+router = routers.SimpleRouter()
+router.register(r'wallets', WalletViewSet)
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/wallets/', WalletAPIList.as_view()),
-    path('api/v1/wallets/<uuid:pk>', WalletAPIUpdate.as_view()),
-    path('api/v1/walletsdetail/<uuid:pk>', WalletAPIDetailView.as_view()),
-
+    # http://127.0.0.1:8000/api/v1/wallets/
+    path('api/v1/', include(router.urls))
+    # path('api/v1/wallets/', WalletViewSet.as_view({'get': 'list'})),
+    # path('api/v1/wallets/<uuid:pk>', WalletViewSet.as_view({'put': 'update'})),
 ]
