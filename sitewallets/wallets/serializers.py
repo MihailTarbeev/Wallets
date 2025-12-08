@@ -14,3 +14,14 @@ class WalletSerializer(serializers.Serializer):
         max_digits=20,
         decimal_places=2,
         default=0.00)
+
+    def create(self, validated_data):
+        return Wallet.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.uuid = validated_data.get("uuid", instance.uuid)
+        instance.updated_at = validated_data.get(
+            "updated_at", instance.updated_at)
+        instance.balance = validated_data.get("balance", instance.balance)
+        instance.save()
+        return instance

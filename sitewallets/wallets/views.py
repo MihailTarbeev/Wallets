@@ -15,7 +15,22 @@ class WalletAPIView(APIView):
         serializer = WalletSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        new_wallet = Wallet.objects.create(
-            balance=request.data['balance']
-        )
-        return Response({'wallet': WalletSerializer(new_wallet).data})
+        # метод save вызывает в WalletSerializer метод create
+        serializer.save()
+
+        return Response({'wallet': serializer.data})
+
+    def put(self, request,  *args, **kwargs):
+        uuid = kwargs.get("uuid", None)
+        if not uuid:
+            return Response({"error": "Method PUT not allowed"})
+
+        try:
+            instance = Wallet.objects.get(uuid=uuid)
+        except:
+            return Response({"error": "Object does not exists"})
+
+        serializer = WalletSerializer(data=request.data, instance=instance)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"wallet": serializer.data})
