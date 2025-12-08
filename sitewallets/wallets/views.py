@@ -16,6 +16,11 @@ class WalletAPIUpdate(generics.UpdateAPIView):
     serializer_class = WalletSerializer
 
 
+class WalletAPIDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Wallet.objects.all()
+    serializer_class = WalletSerializer
+
+
 # class WalletAPIView(APIView):
 #     def get(self, request):
 #         wallets_objs = Wallet.objects.all()

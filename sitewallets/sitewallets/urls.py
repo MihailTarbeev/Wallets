@@ -21,6 +21,7 @@ from wallets.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/wallets/', WalletAPIList.as_view()),
-    path('api/v1/wallets/<uuid:pk>', WalletAPIUpdate.as_view())
+    path('api/v1/wallets/<uuid:pk>', WalletAPIUpdate.as_view()),
+    path('api/v1/walletsdetail/<uuid:pk>', WalletAPIDetailView.as_view()),
 
 ]
