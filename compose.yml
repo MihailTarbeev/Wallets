@@ -1,0 +1,51 @@
+services:
+  sitewallets:
+    build: ./sitewallets
+    image: sitewallets
+    container_name: sitewallets
+    restart: always
+    entrypoint: ["/app/www/sitewallets/entrypoint.sh"]
+    command: "python manage.py runserver 0.0.0.0:8000"
+    env_file:
+      - .env
+    links:
+      - "postgres:dbps"
+    networks:
+      - dbnet
+    volumes:
+      - ./sitewallets:/app/www/sitewallets
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    ports:
+      - "8080:8080"
+    links:
+      - "postgres:db"
+    networks:
+      - dbnet
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: psgr
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_USER=${DATABASE_USERNAME}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+    networks:
+      - dbnet
+    
+networks:
+  dbnet:
+    driver: bridge
+
+volumes:
+  postgres-data:
