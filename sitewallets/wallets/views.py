@@ -6,7 +6,7 @@ from django.db import transaction
 import uuid as uuid_lib
 from .models import Wallet, Operation
 from .serializers import WalletOperationSerializer, WalletSerializer
-from rest_framework.generics import RetrieveAPIView, ListCreateAPIView
+from rest_framework.generics import RetrieveAPIView, ListCreateAPIView, ListAPIView
 
 
 class WalletAPIList(ListCreateAPIView):
@@ -14,7 +14,7 @@ class WalletAPIList(ListCreateAPIView):
     serializer_class = WalletSerializer
 
 
-class OperationAPIList(ListCreateAPIView):
+class OperationAPIList(ListAPIView):
     queryset = Operation.objects.all()
     serializer_class = OperationSerializer
 
