@@ -10,6 +10,7 @@
 ## 📋 Оглавление
 
 - [🚀 Быстрый старт](#section-bystryj-start)
+- [📊 Тестовые данные](#section-testovye-dannye)
 - [🔌 API Endpoints](#section-api-endpoints)
 - [🔧 Технологический стек](#section-tehnologicheskij-stek)
 - [📁 Структура проекта](#section-struktura-proekta)
@@ -38,6 +39,21 @@ docker compose up --build
 API: http://127.0.0.1:8000
 
 Adminer (управление БД): http://127.0.0.1:8080
+
+<a id="section-testovye-dannye"></a>
+## 📊 Тестовые данные
+**Важно!** 
+
+При запуске проекта подгружаются тестовые данные (перезаписывают существующие) из файла db.json.
+
+Для того, чтобы этого не происходило, закомментируйте строчку в compose.yml:
+```python
+    command: >
+      sh -c "python manage.py migrate &&
+            #  python manage.py loaddata db.json 2>/dev/null || true &&
+             python manage.py runserver 0.0.0.0:8000"
+```
+
 <a id="section-api-endpoints"></a>
 ## 🔌 API Endpoints
 
