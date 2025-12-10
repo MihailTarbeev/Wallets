@@ -11,6 +11,4 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-RUN chmod +x /app/www/sitewallets/entrypoint.sh
-
 USER userdj
