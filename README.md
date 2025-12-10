@@ -28,7 +28,7 @@
 ```bash
 # Клонировать репозиторий
 git clone https://github.com/MihailTarbeev/Wallets.git
-cd sitewallets
+cd Wallets
 
 # Запустить все сервисы
 docker compose up --build
