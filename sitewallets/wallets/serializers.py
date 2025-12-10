@@ -7,6 +7,9 @@ class WalletSerializer(serializers.ModelSerializer):
     class Meta:
         model = Wallet
         fields = ("uuid", "balance")
+        extra_kwargs = {
+            'balance': {'min_value': Decimal('0.00')}
+        }
 
 
 class OperationSerializer(serializers.ModelSerializer):

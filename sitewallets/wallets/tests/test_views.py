@@ -1,9 +1,8 @@
 import pytest
 import json
-import threading
 from decimal import Decimal
 from django.urls import reverse
-from wallets.models import Operation
+from wallets.models import Operation, Wallet
 import uuid
 
 
@@ -146,3 +145,102 @@ class TestWalletAPI:
         operation_count = Operation.objects.filter(
             wallet=temp_wallet_1000).count()
         assert operation_count == 2
+
+    @pytest.mark.django_db
+    def test_get_wallets_list_empty(self, api_client):
+        """Тест получения пустого списка кошельков"""
+        url = reverse('wallet-list')
+        response = api_client.get(url)
+
+        assert response.status_code == 200
+        assert response.json() == []
+
+    @pytest.mark.django_db
+    def test_get_wallets_list_with_data(self, api_client, temp_wallet_1000, temp_wallet_default):
+        """Тест получения списка кошельков с данными"""
+        url = reverse('wallet-list')
+        response = api_client.get(url)
+
+        assert response.status_code == 200
+        data = response.json()
+
+        assert len(data) == 2
+
+        for wallet_data in data:
+            assert 'uuid' in wallet_data
+            assert 'balance' in wallet_data
+            assert isinstance(wallet_data['uuid'], str)
+            assert isinstance(wallet_data['balance'], str)
+
+    @pytest.mark.django_db
+    def test_create_wallet(self, api_client):
+        """Тест создания нового кошелька"""
+        url = reverse('wallet-list')
+
+        data = {'balance': '500.00'}
+        response = api_client.post(
+            url,
+            data=json.dumps(data),
+            content_type='application/json'
+        )
+
+        assert response.status_code == 201
+        response_data = response.json()
+
+        assert 'uuid' in response_data
+        assert response_data['balance'] == '500.00'
+
+        wallet = Wallet.objects.get(uuid=response_data['uuid'])
+        assert wallet.balance == Decimal('500.00')
+
+    @pytest.mark.django_db
+    def test_create_wallet_without_balance(self, api_client):
+        """Тест создания кошелька без указания баланса (должен быть 0 по умолчанию)"""
+        url = reverse('wallet-list')
+
+        response = api_client.post(
+            url,
+            data=json.dumps({}),
+            content_type='application/json'
+        )
+
+        assert response.status_code == 201
+        response_data = response.json()
+
+        assert 'uuid' in response_data
+        assert response_data['balance'] == '0.00'
+
+    @pytest.mark.django_db
+    def test_create_wallet_invalid_data(self, api_client):
+        """Тест создания кошелька с невалидными данными"""
+        url = reverse('wallet-list')
+
+        data = {'balance': '-100.00'}
+        response = api_client.post(
+            url,
+            data=json.dumps(data),
+            content_type='application/json'
+        )
+
+        assert response.status_code == 400
+
+    @pytest.mark.django_db
+    def test_get_operations_list_empty(self, api_client):
+        """Тест получения пустого списка операций"""
+        url = reverse('operation-list')
+        response = api_client.get(url)
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data == []
+
+    @pytest.mark.django_db
+    def test_get_operations_list_with_data(self, api_client, temp_operation_dep_100, temp_operation_wid_500):
+        """Тест получения списка операций с данными"""
+        url = reverse('operation-list')
+        response = api_client.get(url)
+
+        assert response.status_code == 200
+        data = response.json()
+
+        assert len(data) == 2
