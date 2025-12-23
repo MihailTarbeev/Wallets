@@ -1,3 +1,9 @@
 djvenv
 db.sqlite3
 .vscode
+__pycache__
+.pytest_cache
+sitewallets/htmlcov
+wallets/__pycache__
+sitewallets/__pycache__
+.coverage
