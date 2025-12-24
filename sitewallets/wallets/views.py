@@ -1,36 +1,49 @@
 from wallets.serializers import WalletSerializer, OperationSerializer, WalletOperationSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.db import transaction
 import uuid as uuid_lib
 from .models import Wallet, Operation
 from .serializers import WalletOperationSerializer, WalletSerializer
 from rest_framework.generics import RetrieveAPIView, ListCreateAPIView, ListAPIView
+from .permissions import IsOwner
 
 
 class WalletAPIList(ListCreateAPIView):
     queryset = Wallet.objects.all()
     serializer_class = WalletSerializer
+    permission_classes = (IsAuthenticated, )
+
+    def get_queryset(self):
+        return Wallet.objects.filter(user=self.request.user)
 
 
 class OperationAPIList(ListAPIView):
     queryset = Operation.objects.all()
     serializer_class = OperationSerializer
+    permission_classes = (IsAuthenticated, )
+
+    def get_queryset(self):
+        return Operation.objects.filter(user=self.request.user)
 
 
 class WalletAPIGet(RetrieveAPIView):
     queryset = Wallet.objects.all()
     serializer_class = WalletSerializer
+    permission_classes = (IsOwner, )
 
 
 class WalletAPIUpdate(APIView):
+    permission_classes = (IsAuthenticated, )
+
     def post(self, request, pk, *args, **kwargs):
         try:
-            wallet = Wallet.objects.get(uuid=pk)
+            wallet = Wallet.objects.get(uuid=pk, user=request.user)
         except Wallet.DoesNotExist:
             return Response(
-                {"error": "Wallet not found"},
+                {"error": "Wallet not found or you don't have permission"},
                 status=status.HTTP_404_NOT_FOUND
             )
 
@@ -52,8 +65,8 @@ class WalletAPIUpdate(APIView):
 
         try:
             with transaction.atomic():
-                wallet = Wallet.objects.select_for_update(
-                    nowait=False).get(uuid=pk)
+                wallet = Wallet.objects.select_for_update(nowait=False).get(
+                    uuid=pk, user=request.user)
 
                 if Operation.objects.filter(transaction_id=transaction_id).exists():
                     return Response(
@@ -65,7 +78,8 @@ class WalletAPIUpdate(APIView):
                     transaction_id=transaction_id,
                     operation_type=operation_type,
                     amount=amount,
-                    wallet=wallet
+                    wallet=wallet,
+                    user=request.user
                 )
 
                 if operation_type == 'DEPOSIT':

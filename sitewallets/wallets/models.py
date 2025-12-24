@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 import uuid
 
@@ -16,6 +17,8 @@ class Wallet(models.Model):
         decimal_places=2,
         default=0.00
     )
+    user = models.ForeignKey(
+        User, verbose_name='Пользователь', on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'wallets'
@@ -50,6 +53,9 @@ class Operation(models.Model):
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
+
+    user = models.ForeignKey(
+        User, verbose_name='Пользователь', on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'operations'
