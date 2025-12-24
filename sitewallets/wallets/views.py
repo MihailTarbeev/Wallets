@@ -19,6 +19,9 @@ class WalletAPIList(ListCreateAPIView):
     def get_queryset(self):
         return Wallet.objects.filter(user=self.request.user)
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
 
 class OperationAPIList(ListAPIView):
     queryset = Operation.objects.all()

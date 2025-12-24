@@ -7,7 +7,8 @@ class WalletSerializer(serializers.ModelSerializer):
     class Meta:
         model = Wallet
         fields = "__all__"
-        read_only_fields = ('user', 'uuid', 'created_at', 'updated_at')
+        read_only_fields = ('user', 'uuid', 'created_at',
+                            'updated_at', 'balance')
         extra_kwargs = {
             'balance': {'min_value': Decimal('0.00'), 'read_only': True}
         }
