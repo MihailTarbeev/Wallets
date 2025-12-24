@@ -42,7 +42,7 @@ class TestOperationModel:
         assert str(temp_operation_wid_500) == expected
 
     @pytest.mark.django_db
-    def test_unique_transaction_id(self, temp_wallet_1000):
+    def test_unique_transaction_id(self, temp_wallet_1000, test_user):
         """Тест уникальности transaction_id"""
         transaction_id = uuid.uuid4()
 
@@ -50,7 +50,8 @@ class TestOperationModel:
             transaction_id=transaction_id,
             operation_type='DEPOSIT',
             amount=Decimal('100.00'),
-            wallet=temp_wallet_1000
+            wallet=temp_wallet_1000,
+            user=test_user
         )
 
         with pytest.raises(IntegrityError):
@@ -58,5 +59,6 @@ class TestOperationModel:
                 transaction_id=transaction_id,
                 operation_type='DEPOSIT',
                 amount=Decimal('200.00'),
-                wallet=temp_wallet_1000
+                wallet=temp_wallet_1000,
+                user=test_user
             )

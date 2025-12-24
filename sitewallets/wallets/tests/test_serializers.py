@@ -83,7 +83,7 @@ class TestWalletOperationSerializer:
         assert serializer.is_valid() is False
 
     @pytest.mark.django_db
-    def test_duplicate_transaction_id(self, temp_wallet_1000):
+    def test_duplicate_transaction_id(self, temp_wallet_1000, test_user):
         """Тест уникальности transaction_id"""
         transaction_id = uuid.uuid4()
 
@@ -91,7 +91,8 @@ class TestWalletOperationSerializer:
             transaction_id=transaction_id,
             operation_type='DEPOSIT',
             amount=Decimal('100.00'),
-            wallet=temp_wallet_1000
+            wallet=temp_wallet_1000,
+            user=test_user
         )
 
         data = {
