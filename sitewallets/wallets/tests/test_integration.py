@@ -9,18 +9,18 @@ from wallets.models import Operation
 class TestWalletIntegration:
     """Интеграционные тесты полного цикла операций"""
 
-    def test_complete_wallet_flow(self, api_client, temp_wallet_1000, deposit_500, withdraw_300):
+    def test_complete_wallet_flow(self, authenticated_api_client, temp_wallet_1000, deposit_500, withdraw_300):
         """Полный тестовый сценарий работы с кошельком"""
 
         url = reverse('wallet-detail', kwargs={'pk': temp_wallet_1000.uuid})
-        response = api_client.get(url)
+        response = authenticated_api_client .get(url)
         assert response.status_code == 200
         assert Decimal(response.json()['balance']) == Decimal('1000.00')
 
         operation_url = reverse(
             'wallet-operation', kwargs={'pk': temp_wallet_1000.uuid})
 
-        response = api_client.post(
+        response = authenticated_api_client .post(
             operation_url,
             data=json.dumps(deposit_500),
             content_type='application/json'
@@ -30,7 +30,7 @@ class TestWalletIntegration:
         temp_wallet_1000.refresh_from_db()
         assert temp_wallet_1000.balance == Decimal('1500.00')
 
-        response = api_client.post(
+        response = authenticated_api_client .post(
             operation_url,
             data=json.dumps(withdraw_300),
             content_type='application/json'
